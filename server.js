@@ -42,13 +42,27 @@ const io = socket(server, {
 
 io.on("connection", (socket) => {
   console.log("a user connected");
+  socket.on("set_user_info", (userInfo) => {
+    // Set the username and twitterHandle on the socket
+    socket.username = userInfo.username;
+    socket.twitterHandle = userInfo.twitterHandle;
+  });
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
+
   socket.on("chat message", (msg) => {
-    console.log("message: " + msg);
-    io.emit("chat message", msg);
+    console.log("message: " + msg.message);
+    // Include the Twitter handle in the message
+    const messageWithUserInfo = {
+      username: socket.username,
+      twitterHandle: socket.twitterHandle,
+      message: msg.message,
+    };
+    io.emit("chat message", messageWithUserInfo);
   });
+  
   socket.on("video update", (videoUrl) => {
     console.log("video update: " + videoUrl);
     currentVideoUrl = videoUrl;

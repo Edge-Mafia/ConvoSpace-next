@@ -1,5 +1,8 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import YouTube from "react-youtube";
 import io from "socket.io-client";
@@ -11,6 +14,13 @@ const ChatApp = () => {
     }
     return null;
   });
+  const [twitterHandle, setTwitterHandle] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("twitterHandle");
+    }
+    return null;
+  });
+  // console.log(twitterHandle);
   const [messageInput, setMessageInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [videoUrl, setVideoUrl] = useState("");
@@ -33,21 +43,26 @@ const ChatApp = () => {
 
     newSocket.on("connect", () => {
       console.log("Connected to the server");
+      // Set the username and twitterHandle when connecting to the server
+      newSocket.emit("set_user_info", {
+        username,
+        twitterHandle,
+      });
     });
 
     // Set up the event listener for incoming messages
     newSocket.on("chat message", (msg) => {
-      if (
-        !messages.some(
-          (existingMsg) => existingMsg === `${msg.username}: ${msg.message}`
-        )
-      ) {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          `${msg.username}: ${msg.message}`,
-        ]);
-      }
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          username: msg.username,
+          twitterHandle: msg.twitterHandle,
+          message: msg.message,
+        },
+      ]);
+      console.log(msg.twitterHandle);
     });
+
     newSocket.on("video_pause", (currentTime) => {
       const internarlPlayer = videoRef.current.getInternalPlayer();
       internarlPlayer.seekTo(currentTime);
@@ -71,20 +86,24 @@ const ChatApp = () => {
     });
 
     newSocket.connect();
-
+    newSocket.emit("set_twitter_handle", twitterHandle);
     setSocket(newSocket);
 
     return () => {
       newSocket.disconnect();
     };
-  }, [username, messages, videoId, videoUrl]);
+  }, [username, messages, videoId, videoUrl, twitterHandle]);
 
   const sendMessage = () => {
     const message = messageInput.trim();
     if (message !== "") {
-      const newMessage = `${username}: ${message}`;
+      const newMessage = {
+        username,
+        twitterHandle,
+        message,
+      };
       setMessages((prevMessages) => [...prevMessages, newMessage]);
-      socket.emit("chat message", { username, message });
+      socket.emit("chat message", { username, message, twitterHandle });
 
       setMessageInput("");
 
@@ -129,6 +148,8 @@ const ChatApp = () => {
     socket.emit("video_pause", { currentTime });
   };
 
+  console.log(messages);
+
   return (
     <div>
       <div>
@@ -161,7 +182,34 @@ const ChatApp = () => {
       <div id="chat-container">
         {messages.map((msg, index) => (
           <div key={index} className="message">
-            {msg}
+            <span className="username">
+              <HoverCard>
+                <HoverCardTrigger>{msg.username}</HoverCardTrigger>
+                <HoverCardContent className="w-50">
+                  <div className="flex justify-between space-x-4">
+                    <Avatar>
+                      <AvatarImage
+                        src={`https://static.toiimg.com/thumb/msid-102075304,width-1280,height-720,resizemode-4/102075304.jpg`}
+                      />
+                      <AvatarFallback>X</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-semibold">
+                        {" "}
+                        <Link
+                          href={`https://x.com/${msg.twitterHandle}`}
+                          target="_blank"
+                        >
+                          @{msg.twitterHandle}
+                        </Link>
+                      </h4>
+                    </div>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+              :{" "}
+            </span>
+            {msg.message}
           </div>
         ))}
       </div>
