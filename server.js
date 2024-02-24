@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const socket = require("socket.io");
 const cors = require("cors");
 var usernames = [];
-var currentVideoUrl = ''; 
+var currentVideoUrl = "";
 
 const app = express();
 
@@ -36,8 +36,8 @@ const io = socket(server, {
   cors: {
     origin: "http://localhost:3000", // Adjust this to match your React app's origin
     methods: ["GET", "POST"],
-    credentials: true
-  }
+    credentials: true,
+  },
 });
 
 io.on("connection", (socket) => {
@@ -54,6 +54,13 @@ io.on("connection", (socket) => {
     currentVideoUrl = videoUrl;
     io.emit("video update", videoUrl); // Broadcast the update to all users
   });
-
+  socket.on("video_play", ({ currentTime }) => {
+    console.log(`Server: Played at ${currentTime}`);
+    io.emit("video_play", currentTime);
+  });
+  socket.on("video_pause", ({ currentTime }) => {
+    console.log(`Server: Paused at ${currentTime}`);
+    io.emit("video_pause", currentTime);
+  });
   io.to(socket.id).emit("video update", currentVideoUrl);
 });
