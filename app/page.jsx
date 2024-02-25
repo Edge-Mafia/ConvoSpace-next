@@ -79,7 +79,7 @@ function LoginPage() {
         </div>
 
         <div className="buttons flex justify-center items-center">
-          <a href="#card-create"><button className="text-2xl" variant="secondary">GET STARTED</button></a>
+          <a href="#card-create"><Button className="text-2xl font-semibold">GET STARTED</Button></a>
         </div>
       </div>
 
