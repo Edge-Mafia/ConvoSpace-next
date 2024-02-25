@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Button } from '@/components/ui/button';
 import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import YouTube from "react-youtube";
@@ -148,81 +149,113 @@ const ChatApp = () => {
     socket.emit("video_pause", { currentTime });
   };
 
-  console.log(messages);
+  // console.log(messages);
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevents the default behavior of Enter key (e.g., form submission)
+      sendMessage();
+    }
+  };
 
   return (
-    <div>
-      <div>
-        <input
+    <div className="w-screen px-8">
+      <div className="header flex justify-between relative">
+        <div className="logo flex items-center">
+          <img src="convospace-logo.png" alt="LOGO" className="w-1/6" style={{top: "5%", bottom: ""}} />
+          <h1 className="text-3xl font-semibold">Convospace</h1>
+        </div>
+
+        <div className="flex mt-6">
+          <input
           type="text"
           value={videoUrl}
           onChange={(e) => setVideoUrl(e.target.value)}
           placeholder="Enter the Youtube Video Link..."
-        />
-        <button id="send-button" onClick={setVideo}>
-          Go
-        </button>
+          className="w-full p-2 rounded mt-1 mr-4"
+          style={{ height: "2rem" }}
+          onKeyPress={(e) => {
+            e.preventDefault()
+            setVideo()
+          }}
+          />
+          <Button onClick={setVideo} className="text-black text-xl/2 font-semibold">
+            Go
+          </Button>
+        </div>
       </div>
       {videoId && (
-        <YouTube
-          ref={videoRef}
-          videoId={videoId}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onStateChange={(e) => {
-            console.log(e);
-          }}
-          onReady={(e) => {
-            // console.log(e);
-            // e.target.playVideoAt(7);
-          }}
-        />
-      )}
-      <h1 style={{ margin: "1rem auto auto" }}>Convospace</h1>
-      <div id="chat-container">
-        {messages.map((msg, index) => (
-          <div key={index} className="message">
-            <span className="username">
-              <HoverCard>
-                <HoverCardTrigger>{msg.username}</HoverCardTrigger>
-                <HoverCardContent className="w-50">
-                  <div className="flex justify-between space-x-4">
-                    <Avatar>
-                      <AvatarImage
-                        src={`https://static.toiimg.com/thumb/msid-102075304,width-1280,height-720,resizemode-4/102075304.jpg`}
-                      />
-                      <AvatarFallback>X</AvatarFallback>
-                    </Avatar>
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-semibold">
-                        {" "}
-                        <Link
-                          href={`https://x.com/${msg.twitterHandle}`}
-                          target="_blank"
-                        >
-                          @{msg.twitterHandle}
-                        </Link>
-                      </h4>
-                    </div>
-                  </div>
-                </HoverCardContent>
-              </HoverCard>
-              :{" "}
-            </span>
-            {msg.message}
-          </div>
-        ))}
-      </div>
+        <>
+          <div className="chats w-full grid justify-items-center">
+            <div className="video p-5 w-3/4 flex justify-center">
+              <YouTube
+                ref={videoRef}
+                videoId={videoId}
+                onPlay={handlePlay}
+                onPause={handlePause}
+                onStateChange={(e) => {
+                  console.log(e);
+                }}
+                onReady={(e) => {
+                  // console.log(e);
+                  // e.target.playVideoAt(7);
+                }}
+              />
+            </div>
 
-      <input
-        type="text"
-        value={messageInput}
-        onChange={(e) => setMessageInput(e.target.value)}
-        placeholder="Type your message..."
-      />
-      <button id="send-button" onClick={sendMessage}>
-        Send
-      </button>
+            <div id="chat-container" className="flex flex-col items-center relative w-1/2 h-3/4 overflow-y-auto">
+              {messages.map((msg, index) => (
+                <div key={index} className={`w-full flex flex-row justify-start h-auto message ${msg.username === username ? 'text-white justify-end' : ''}`}>
+                  <span className="username font-semibold"> 
+                    <HoverCard>
+                      <HoverCardTrigger>{msg.username}</HoverCardTrigger>
+                      <HoverCardContent className="w-50">
+                        <div className="flex justify-between space-x-4">
+                          <Avatar>
+                            <AvatarImage
+                              src={`https://static.toiimg.com/thumb/msid-102075304,width-1280,height-720,resizemode-4/102075304.jpg`}
+                            />
+                            <AvatarFallback>X</AvatarFallback>
+                          </Avatar>
+                          <div className="space-y-1">
+                            <h4 className="text-sm font-semibold">
+                              {" "}
+                              <Link
+                                href={`https://x.com/${msg.twitterHandle}`}
+                                target="_blank"
+                              >
+                                @{msg.twitterHandle}
+                              </Link>
+                            </h4>
+                          </div>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                    :{" "}
+                  </span>
+                  <div className="msg w-1/4 h-auto break-words">
+                    {msg.message}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="chat-input w-full flex bottom-2 md:w-1/2">
+              <input
+                type="text"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+                className="w-full p-2 rounded mr-2"
+              />
+              <Button onClick={sendMessage} className="text-black text-xl/2 font-semibold">
+                Send
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
