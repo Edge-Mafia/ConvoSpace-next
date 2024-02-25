@@ -186,7 +186,7 @@ const ChatApp = () => {
       </div>
       {videoId && (
         <>
-          <div className="chats w-full grid justify-items-center">
+          <div className="chats w-full grid justify-items-center overflow-x-clip">
             <div className="video p-5 w-3/4 flex justify-center">
               <YouTube
                 ref={videoRef}

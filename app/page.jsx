@@ -64,7 +64,7 @@ function LoginPage() {
 
   return (
     <main className="snap-y snap-mandatory flex flex-col justify-center items-center" style={{ scrollSnapType: 'y mandatory' }}>
-      <div className="snap-always snap-start banner flex flex-col justify-center items-center w-9/12 space-y-5">
+      <div className="snap-always snap-start banner flex flex-col justify-center items-center w-9/12 space-y-5  p-24">
         <div className="logo flex justify-center items-center">
           <img src="/convospace-logo.png" alt="LOGO" />
           <div className={cn("logo-text", courgette.className)}>
@@ -83,8 +83,8 @@ function LoginPage() {
         </div>
       </div>
 
-      <div id='card-create' className="snap-always snap-start flex flex-col md:flex-row space-x-40 justify-center items-center">
-        <div className="container md:flex space-y-4">
+      <div id='card-create' className="snap-always snap-start flex flex-col md:flex-row space-x-40 justify-center items-center  py-32 pt-44">
+        <div className="container md:flex space-x-44">
           <div className="side-post text-center">
             <div className="logo">
               <img src="/convospace-logo.png" alt="LOGO" />
