@@ -1,0 +1,37 @@
+.hero-area {
+  align-items: center;
+  column-gap: 0;
+  row-gap: 0;
+  background-image: url('/landing-page/img-bg-2-5.png');
+  background-position: 50% 200px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-clip: border-box;
+  background-origin: padding-box;
+  background-color: #162d3c;
+
+  /* For screens larger than laptop (min-width: 768px): */
+  @media only screen and (min-width: 1024px) {
+      background-image: url('/landing-page/img-bg-2-5.png'), url('/landing-page/img-bg-1.png');
+      background-position: 50% 200px, 50% 0%;
+      background-size: contain, cover;
+      background-repeat: no-repeat no-repeat, no-repeat no-repeat;
+      background-attachment: scroll, scroll;
+      background-clip: border-box, border-box;
+      background-origin: padding-box, padding-box;
+  }
+}
+  
+    
+.key-features{
+  background-image: url('/landing-page/img-bg-2.png');
+  background-position: 50% 200px, 50% 0%;
+  background-size: contain;
+  background-repeat: no-repeat, no-repeat;
+  background-position: 300px 50px;
+  background-size: 10% auto;
+  background-attachment: scroll;
+  background-clip: border-box;
+  background-origin: padding-box;
+}
